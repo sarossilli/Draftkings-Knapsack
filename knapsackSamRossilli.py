@@ -1,7 +1,16 @@
+import pandas as pd
+
 def printA(a):
     for l in a:
         print()
         print('\n'.join([''.join(['{:4}'.format(item) for item in row]) for row in l]))
+
+
+def printres(a,b):
+    print("PLAYERS")
+    for i in b:
+        print( df.iloc[i]['Name'] )
+
 
 def knapSack(W, wt, val, n,l): 
     K = [[[0 for x in range(W + 1)] for x in range(n + 1)] for x in range(l+1)]
@@ -25,8 +34,11 @@ def knapSack(W, wt, val, n,l):
                         K[L][i][w] = max(val[i-1] + K[L-1][i-1][w-wt[i-1]],  K[L][i-1][w]) 
                     else: 
                         K[L][i][w] = K[L][i-1][w] 
+        
+    res = K[l][n][w] #The expected points value is here   
     
-    res = K[l][n][w]    
+    
+    #Reconstruct answer with index of players chosen
     w = W 
     for i in range(n, 0, -1): 
         if res <= 0: 
@@ -42,7 +54,7 @@ def knapSack(W, wt, val, n,l):
   
             # This item is included. 
             B.append(i) 
-              
+        
             # Since this weight is included 
             # its value is deducted 
             res = res - val[i - 1] 
@@ -51,47 +63,24 @@ def knapSack(W, wt, val, n,l):
     return K[l][n][w],B
 
 
-
-import pandas as pd 
-
+#Setup Dataframe
 df = pd.read_csv('Dk.csv')
-
 df = df[df['Roster Position'] == 'FLEX']
 df = df[df['Salary']>2000]
-
 df = df.reset_index()
-
 wt = df['Salary'].tolist()
 wt[:] = [x / 100 for x in wt]
 wt[:] = [round(x) for x in wt]
-
 val = df['AvgPointsPerGame'].tolist()
 val[:] = [(x * 100 )for x in val]
 val[:] = [round(x) for x in val]
-
-
 W = int(50000/100)
 n = len(val) 
 l = 6
 
-print(df)
-
+#Run Knapsack
 a,b = knapSack(W,wt,val,n,l)
-print(b)
-# Driver program to test above function 
-#val = [5, 10, 50,100] 
-#wt = [10,50, 20, 10] 
-#W = 70
-#n = len(val) 
-#l = 5
 
+#Print Results
+printres(a,b)
 
-#print(b) 
-def print(a,b):
-    print("EXPECTED POINTS")
-    print(a/100)
-    print('\n')
-
-    print("PLAYERS")
-    for i in b:
-        print( df.iloc[i]['Name'] )
